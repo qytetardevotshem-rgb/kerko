@@ -2,7 +2,7 @@
 <html lang="sq">
 <head>
     <meta charset="UTF-8">
-    <title>Kërkim sipas Kodit | Google Sheets</title>
+    <title>Kërkim sipas Letërnjoftimit | Google Sheets</title>
     <style>
         * {
             box-sizing: border-box;
@@ -211,7 +211,7 @@
             color: #93c5fd;
         }
         .no-print {
-            /* do nothing here; used only in @media print */
+            /* vetëm për @media print */
         }
 
         @media (max-width: 540px) {
@@ -254,14 +254,14 @@
 <body>
 
 <div class="app">
-    <!-- Header me logon e Republikës së Kosovës -->
+    <!-- Header -->
     <div class="header">
         <img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Coat_of_arms_of_Kosovo.svg"
              alt="Kosova"
              style="width:48px; height:48px; margin-right:4px;">
         <div class="header-text">
             <h1>Republika e Kosovës</h1>
-            <p>Sistem kërkimi sipas kodit nga lista e regjistrit</p>
+            <p>Sistem kërkimi sipas numrit të letërnjoftimit</p>
         </div>
     </div>
 
@@ -272,7 +272,7 @@
         <input
             type="text"
             id="idInput"
-            placeholder="Shkruaj kodin p.sh. 10000120"
+            placeholder="Shkruaj numrin e letërnjoftimit p.sh. 1000021799"
             autocomplete="off"
         >
         <button id="searchBtn">
@@ -280,18 +280,18 @@
         </button>
     </div>
     <div class="hint no-print">
-        Shtyp Enter ose “Kërko” pasi të shkruash kodin (kolona B në Google Sheets).
+        Shtyp Enter ose “Kërko” pasi të shkruash numrin e letërnjoftimit (kolona B: Leternjoftimi).
     </div>
 
     <div id="result"></div>
 </div>
 
 <script>
-    // Linku i publikuar CSV nga Google Sheets (që më dërgove)
+    // Linku i RI i publikuar CSV nga Google Sheets
     const CSV_URL =
-        "https://docs.google.com/spreadsheets/d/e/2PACX-1vQAT9gEX9Tz6N5XYh1BKcvooQF4o7DeoJGFTv1jywjpubYQJmzJc9ZpTFt3JvDdAXZjDsXweWI6cxuh/pub?output=csv";
+        "https://docs.google.com/spreadsheets/d/e/2PACX-1vTSMBzjWZIZfNUD0bPlfi6VvhncQ3l1R469dZ1jgYBdrcn5LRW_5_No6p_HBmL1z7gNzestszsUkyd_/pub?gid=1793407122&single=true&output=csv";
 
-    // Kolona B = indeksi 1 (A=0, B=1, C=2...)
+    // Leternjoftimi është në kolonën B => indeks 1 (A=0, B=1, ...)
     const ID_COLUMN_INDEX = 1;
 
     let sheetData = [];
@@ -307,7 +307,6 @@
         }
 
         const text = await response.text();
-
         const rows = text.split(/\r?\n/).filter(r => r.trim() !== "");
         sheetData = rows.map(row => row.split(","));
         header = sheetData[0];
@@ -330,48 +329,58 @@
 
         if (!row) {
             div.innerHTML =
-                "<div class='error'>Nuk u gjet asnjë rresht për këtë kod. Kontrollo saktësinë e kodit në kolonën B.</div>";
+                "<div class='error'>Nuk u gjet asnjë rresht për këtë numër letërnjoftimi. Kontrollo saktësinë.</div>";
             return;
         }
 
-        // Supozim sipas fotos: A = nr, B = kod, C = emër, D = mbiemër, E/F/G fusha të tjera
-        const nr = row[0] ?? "";
-        const kod = row[1] ?? "";
-        const emer = row[2] ?? "";
-        const mbiemer = row[3] ?? "";
-        const njesia = row[4] ?? "";
-        const fusha5 = row[5] ?? "";
-        const fusha6 = row[6] ?? "";
+        // Mappimi sipas kolonave të reja:
+        // A KodiLandes, B Leternjoftimi, C EEmri, D DataLindjes,
+        // E DataAplikimit, F Komenti, G Skema, H Rajoni, I LajmerimiFundit
+        const kodiLandes       = row[0] ?? "";
+        const leternjoftimi    = row[1] ?? "";
+        const eEmri            = row[2] ?? "";
+        const dataLindjes      = row[3] ?? "";
+        const dataAplikimit    = row[4] ?? "";
+        const komenti          = row[5] ?? "";
+        const skema            = row[6] ?? "";
+        const rajoni           = row[7] ?? "";
+        const lajmerimiFundit  = row[8] ?? "";
 
         let html = `<div class="card">
             <div class="card-header">
-                <div class="card-title">Rezultati për kodin: <strong>${kod}</strong></div>
-                <div class="card-tag">Gjetur</div>
+                <div class="card-title">
+                    Rezultati për letërnjoftimin: <strong>${leternjoftimi}</strong>
+                </div>
+                <div class="card-tag">${skema || "Skema"}</div>
             </div>
             <div class="card-main">
                 <div>
-                    <div class="field-label">Emri</div>
-                    <div class="field-value">${emer || "-"}</div>
+                    <div class="field-label">Emri dhe mbiemri</div>
+                    <div class="field-value">${eEmri || "-"}</div>
                 </div>
                 <div>
-                    <div class="field-label">Mbiemri</div>
-                    <div class="field-value">${mbiemer || "-"}</div>
+                    <div class="field-label">Kodi Landes</div>
+                    <div class="field-value">${kodiLandes || "-"}</div>
                 </div>
                 <div>
-                    <div class="field-label">Nr rendor (A)</div>
-                    <div class="field-value">${nr || "-"}</div>
+                    <div class="field-label">Data lindjes</div>
+                    <div class="field-value">${dataLindjes || "-"}</div>
                 </div>
                 <div>
-                    <div class="field-label">Njësia / Vlera (E)</div>
-                    <div class="field-value">${njesia || "-"}</div>
+                    <div class="field-label">Data aplikimit</div>
+                    <div class="field-value">${dataAplikimit || "-"}</div>
                 </div>
                 <div>
-                    <div class="field-label">Fusha F</div>
-                    <div class="field-value">${fusha5 || "-"}</div>
+                    <div class="field-label">Rajoni</div>
+                    <div class="field-value">${rajoni || "-"}</div>
                 </div>
                 <div>
-                    <div class="field-label">Fusha G</div>
-                    <div class="field-value">${fusha6 || "-"}</div>
+                    <div class="field-label">Lajmërimi i fundit</div>
+                    <div class="field-value">${lajmerimiFundit || "-"}</div>
+                </div>
+                <div style="grid-column: 1 / -1;">
+                    <div class="field-label">Komenti</div>
+                    <div class="field-value">${komenti || "-"}</div>
                 </div>
             </div>
             <div class="table-wrap">
@@ -415,7 +424,7 @@
 
         if (!id.trim()) {
             resultDiv.innerHTML =
-                "<div class='error'>Shkruaj një kod së pari.</div>";
+                "<div class='error'>Shkruaj një numër letërnjoftimi së pari.</div>";
             return;
         }
 
