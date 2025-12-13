@@ -1,10 +1,13 @@
-a<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="sq">
 <head>
-  <meta charset="UTF-8">
-  <title> Kërkim me Login | Te Gjitha skemat </title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kërkim sipas Letërnjoftimit | Google Sheets</title>
+
   <style>
     * { box-sizing: border-box; }
+
     body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       margin: 0;
@@ -12,120 +15,225 @@ a<!DOCTYPE html>
       display: flex;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #0f172a, #1e293b, #0f766e);
+      background: linear-gradient(135deg, #0b1f3a, #0a2540, #003a8f);
       color: #e5e7eb;
     }
+
     .app {
-      background: rgba(15, 23, 42, 0.9);
+      background: rgba(10, 25, 47, 0.95);
       border-radius: 18px;
       padding: 24px 22px 20px;
       width: 100%;
       max-width: 520px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.45), 0 0 0 1px rgba(148,163,184,0.2);
-      position: relative;
+      box-shadow:
+        0 20px 40px rgba(0,0,0,0.50),
+        0 0 0 1px rgba(59,130,246,0.25);
     }
+
     .header {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(59,130,246,0.18);
     }
-    .header-text h1 { margin: 0; font-size: 18px; font-weight: 600; }
-    .header-text p { margin: 2px 0 0; font-size: 12px; color: #9ca3af; }
 
-    .topbar {
+    .logo-wrap {
+      width: 52px;
+      height: 52px;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      margin-bottom: 10px;
+      justify-content: center;
+      flex: 0 0 52px;
     }
-    .badge {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(148,163,184,0.35);
-      color: #cbd5e1;
-      background: rgba(2,6,23,0.35);
+
+    .header-text h1 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 650;
     }
-    .btn-logout {
-      border-radius: 10px;
-      border: 1px solid rgba(248,113,113,0.45);
-      padding: 6px 10px;
+
+    .header-text p {
+      margin: 2px 0 0;
       font-size: 12px;
-      cursor: pointer;
-      background: rgba(127,29,29,0.35);
-      color: #fecaca;
+      color: #9ca3af;
     }
-    .btn-logout:hover { filter: brightness(1.08); }
 
     .icon-circle {
-      width: 34px; height: 34px; border-radius: 999px;
-      display: flex; align-items: center; justify-content: center;
-      background: radial-gradient(circle at 30% 20%, #22d3ee, #0ea5e9, #0369a1);
-      box-shadow: 0 0 0 1px rgba(15,23,42,0.8);
-      font-weight: 700; font-size: 18px;
-      margin-bottom: 6px;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 30% 20%, #60a5fa, #2563eb, #1e40af);
+      box-shadow: 0 0 0 1px rgba(15,23,42,0.9);
+      font-weight: 700;
+      font-size: 18px;
+      margin: 10px 0 6px;
     }
-    .search-row { display: flex; gap: 8px; margin-top: 4px; }
+
+    .search-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
     .search-row input {
-      flex: 1; border-radius: 10px;
-      border: 1px solid rgba(148,163,184,0.5);
-      background: rgba(15,23,42,0.8);
-      padding: 8px 10px; color: #e5e7eb;
-      outline: none; font-size: 14px;
+      flex: 1;
+      border-radius: 10px;
+      border: 1px solid rgba(148,163,184,0.45);
+      background: rgba(8, 20, 40, 0.85);
+      padding: 10px 10px;
+      color: #e5e7eb;
+      outline: none;
+      font-size: 14px;
     }
-    .search-row input:focus { border-color: #22d3ee; box-shadow: 0 0 0 1px rgba(34,211,238,0.3); }
+
+    .search-row input:focus {
+      border-color: #60a5fa;
+      box-shadow: 0 0 0 1px rgba(96,165,250,0.35);
+    }
+
     .search-row button {
-      border-radius: 10px; border: none; padding: 8px 14px;
-      font-size: 14px; font-weight: 500; cursor: pointer;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: white; white-space: nowrap;
-      display: inline-flex; align-items: center; gap: 6px;
+      border-radius: 10px;
+      border: none;
+      padding: 10px 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
+
     .search-row button:hover { filter: brightness(1.07); }
-    .hint { margin-top: 6px; font-size: 11px; color: #9ca3af; }
+
+    .hint {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #9ca3af;
+    }
+
     #result { margin-top: 18px; }
 
     .card {
-      background: rgba(15,23,42,0.9);
+      background: rgba(10, 25, 47, 0.95);
       border-radius: 14px;
       padding: 14px 14px 10px;
-      border: 1px solid rgba(55,65,81,0.9);
+      border: 1px solid rgba(59,130,246,0.22);
       box-shadow: 0 10px 25px rgba(0,0,0,0.35);
     }
-    .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-    .card-title { font-size: 14px; font-weight: 600; }
-    .card-tag {
-      font-size: 11px; padding: 3px 8px; border-radius: 999px;
-      background: rgba(34,197,94,0.12);
-      color: #bbf7d0; border: 1px solid rgba(34,197,94,0.3);
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      gap: 10px;
     }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1.2;
+    }
+
+    .card-tag {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.16);
+      color: #dbeafe;
+      border: 1px solid rgba(37, 99, 235, 0.35);
+      flex: 0 0 auto;
+    }
+
     .card-main {
       display: grid;
       grid-template-columns: 1.1fr 1.1fr;
       gap: 8px 16px;
       font-size: 12px;
     }
-    .field-label { font-size: 11px; color: #9ca3af; }
-    .field-value { font-size: 13px; font-weight: 500; color: #e5e7eb; }
 
-    .table-wrap { margin-top: 12px; max-height: 240px; overflow: auto; }
-    table { border-collapse: collapse; width: 100%; font-size: 11px; }
-    th, td { border: 1px solid #374151; padding: 5px 6px; text-align: left; }
-    th { background-color: #111827; position: sticky; top: 0; z-index: 1; }
+    .field-label {
+      font-size: 11px;
+      color: #9ca3af;
+    }
 
-    .actions { margin-top: 15px; display: flex; gap: 10px; }
+    .field-value {
+      font-size: 13px;
+      font-weight: 550;
+      color: #e5e7eb;
+      word-break: break-word;
+    }
+
+    .table-wrap {
+      margin-top: 12px;
+      max-height: 240px;
+      overflow: auto;
+      border-radius: 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 11px;
+    }
+
+    th, td {
+      border: 1px solid rgba(59,130,246,0.22);
+      padding: 6px 7px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background-color: rgba(7, 20, 40, 0.95);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .actions {
+      margin-top: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
     .btn-print {
-      padding: 8px 14px; border: none; border-radius: 8px;
-      background: #0ea5e9; color: white; cursor: pointer;
-      font-size: 13px; display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 14px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 650;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
+
     .btn-reset {
-      padding: 8px 14px; border: none; border-radius: 8px;
-      background: #ef4444; color: white; cursor: pointer;
-      font-size: 13px; display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 14px;
+      border: none;
+      border-radius: 8px;
+      background: #ef4444;
+      color: white;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 650;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
+
     .btn-print:hover { filter: brightness(1.07); }
     .btn-reset:hover { filter: brightness(1.08); }
 
@@ -138,85 +246,14 @@ a<!DOCTYPE html>
       font-size: 12px;
       border: 1px solid rgba(248,113,113,0.5);
     }
-    .loading { margin-top: 10px; font-size: 12px; color: #93c5fd; }
-    .no-print {}
 
-    /* LOGIN OVERLAY */
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.65);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 9999;
-    }
-    .login-box {
-      width: 100%;
-      max-width: 420px;
-      background: rgba(15, 23, 42, 0.95);
-      border: 1px solid rgba(148,163,184,0.2);
-      border-radius: 16px;
-      padding: 18px 16px;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.55);
-    }
-    .login-title {
-      margin: 0 0 6px 0;
-      font-size: 16px;
-      font-weight: 650;
-    }
-    .login-sub {
-      margin: 0 0 14px 0;
-      font-size: 12px;
-      color: #9ca3af;
-      line-height: 1.35;
-    }
-    .login-row { display: grid; gap: 10px; }
-    .login-row input {
-      border-radius: 10px;
-      border: 1px solid rgba(148,163,184,0.5);
-      background: rgba(15,23,42,0.8);
-      padding: 10px 10px;
-      color: #e5e7eb;
-      outline: none;
-      font-size: 14px;
-    }
-    .login-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-    .btn-login {
-      flex: 1;
-      border-radius: 10px;
-      border: none;
-      padding: 10px 12px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      background: linear-gradient(135deg, #22c55e, #16a34a);
-      color: #fff;
-    }
-    .btn-clear {
-      border-radius: 10px;
-      border: 1px solid rgba(148,163,184,0.35);
-      padding: 10px 12px;
-      font-size: 14px;
-      cursor: pointer;
-      background: rgba(2,6,23,0.35);
-      color: #cbd5e1;
-    }
-    .login-error {
+    .loading {
       margin-top: 10px;
-      color: #fecaca;
-      background: rgba(127,29,29,0.6);
-      border-radius: 10px;
-      padding: 8px 10px;
       font-size: 12px;
-      border: 1px solid rgba(248,113,113,0.5);
-      display: none;
+      color: #bfdbfe;
     }
+
+    .no-print {}
 
     @media (max-width: 540px) {
       .app { margin: 16px; padding: 18px 16px; }
@@ -225,7 +262,6 @@ a<!DOCTYPE html>
 
     @media print {
       body { background: #ffffff !important; }
-      .overlay { display: none !important; }
       .app {
         box-shadow: none !important;
         background: #ffffff !important;
@@ -241,287 +277,213 @@ a<!DOCTYPE html>
         box-shadow: none !important;
       }
       table, th, td { border-color: #00000055; }
+      th { background: #f3f4f6 !important; color: #000 !important; }
     }
   </style>
 </head>
+
 <body>
+  <div class="app">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo-wrap">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Flag_of_Kosovo.svg"
+          alt="Flamuri i Kosovës"
+          style="
+            width:48px;
+            height:48px;
+            border-radius:10px;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.35);
+            display:block;
+          "
+        />
+      </div>
 
-<!-- LOGIN OVERLAY -->
-<div id="overlay" class="overlay" aria-modal="true" role="dialog">
-  <div class="login-box">
-    <p class="login-title">Hyrje në sistem</p>
-    <p class="login-sub">Shkruaj username dhe password për të vazhduar.</p>
-
-    <div class="login-row">
-      <input id="loginUser" type="text" placeholder="Username" autocomplete="username">
-      <input id="loginPass" type="password" placeholder="Password" autocomplete="current-password">
+      <div class="header-text">
+        <h1>Republika e Kosovës</h1>
+        <p>Sistem kërkimi sipas numrit të letërnjoftimit</p>
+      </div>
     </div>
 
-    <div class="login-actions">
-      <button class="btn-login" id="btnLogin">Hyr</button>
-      <button class="btn-clear" id="btnClear">Pastro</button>
+    <div class="icon-circle no-print">ID</div>
+
+    <!-- Zona e kërkimit -->
+    <div class="search-row no-print">
+      <input
+        type="text"
+        id="idInput"
+        placeholder="Shkruaj numrin e letërnjoftimit p.sh. 1234567890"
+        autocomplete="off"
+      />
+      <button id="searchBtn">🔍 Kërko</button>
     </div>
 
-    <div id="loginErr" class="login-error">Username ose password gabim.</div>
-  </div>
-</div>
-
-<div class="app" id="app">
-  <div class="topbar no-print">
-    <div class="badge" id="whoami">I pa autentifikuar</div>
-    <button class="btn-logout" id="btnLogout" style="display:none;">Dil</button>
-  </div>
-
-  <div class="header">
-    <img src="https://www.kuvendikosoves.org/Content/images/icons/header-logo.svg"
-         alt="Kosova"
-         style="width:48px; height:48px; margin-right:4px;">
-    <div class="header-text">
-      <h1>Republika e Kosovës</h1>
-      <p>Sistem kërkimi sipas numrit të letërnjoftimit</p>
+    <div class="hint no-print">
+      Shtyp Enter ose “Kërko” pasi të shkruash numrin e letërnjoftimit (kolona B: Leternjoftimi).
     </div>
+
+    <div id="result"></div>
   </div>
 
-  <div class="icon-circle no-print">ID</div>
+  <script>
+    // Linku i RI i publikuar CSV nga Google Sheets
+    const CSV_URL =
+      "https://docs.google.com/spreadsheets/d/e/2PACX-1vTSMBzjWZIZfNUD0bPlfi6VvhncQ3l1R469dZ1jgYBdrcn5LRW_5_No6p_HBmL1z7gNzestszsUkyd_/pub?gid=1793407122&single=true&output=csv";
 
-  <div class="search-row no-print">
-    <input
-      type="text"
-      id="idInput"
-      placeholder="Shkruaj numrin e letërnjoftimit p.sh. 1234567890"
-      autocomplete="off"
-    >
-    <button id="searchBtn">🔍 Kërko</button>
-  </div>
+    // Leternjoftimi është në kolonën B => indeks 1
+    const ID_COLUMN_INDEX = 1;
 
-  <div class="hint no-print">
-    Shtyp Enter ose “Kërko” pasi të shkruash numrin e letërnjoftimit.
-  </div>
+    let sheetData = [];
+    let header = [];
 
-  <div id="result"></div>
-</div>
+    async function loadData() {
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = "<div class='loading'>Duke lexuar të dhënat nga Google Sheets...</div>";
 
-<script>
-  // ===== LOGIN KONFIG =====
-  // Ndryshoji këto 2 rreshta
-  const LOGIN_USER = "admin";
-  const LOGIN_PASS = "3d!buk!";
+      const response = await fetch(CSV_URL);
+      if (!response.ok) {
+        throw new Error("Nuk u lexua Google Sheet. Kontrollo që linku CSV hapet normalisht në browser.");
+      }
 
-  const SESSION_KEY = "app_logged_in_v1";
-  const SESSION_USER = "app_user_v1";
-
-  function isLoggedIn() {
-    return localStorage.getItem(SESSION_KEY) === "1";
-  }
-  function setLoggedIn(user) {
-    localStorage.setItem(SESSION_KEY, "1");
-    localStorage.setItem(SESSION_USER, user);
-  }
-  function clearLogin() {
-    localStorage.removeItem(SESSION_KEY);
-    localStorage.removeItem(SESSION_USER);
-  }
-  function showApp() {
-    document.getElementById("overlay").style.display = "none";
-    const u = localStorage.getItem(SESSION_USER) || "user";
-    document.getElementById("whoami").textContent = "Kyçur si: " + u;
-    document.getElementById("btnLogout").style.display = "inline-flex";
-    document.getElementById("idInput").focus();
-  }
-  function showLogin() {
-    document.getElementById("overlay").style.display = "flex";
-    document.getElementById("whoami").textContent = "I pa autentifikuar";
-    document.getElementById("btnLogout").style.display = "none";
-    document.getElementById("loginUser").focus();
-  }
-
-  // ===== DATA KONFIG (CSV) =====
-  const CSV_URL =
-    "https://docs.google.com/spreadsheets/d/e/2PACX-1vTSMBzjWZIZfNUD0bPlfi6VvhncQ3l1R469dZ1jgYBdrcn5LRW_5_No6p_HBmL1z7gNzestszsUkyd_/pub?gid=1793407122&single=true&output=csv";
-
-  // Leternjoftimi = kolona B => index 1
-  const ID_COLUMN_INDEX = 1;
-
-  let sheetData = [];
-  let header = [];
-
-  async function loadData() {
-    const resultDiv = document.getElementById("result");
-    resultDiv.innerHTML = "<div class='loading'>Duke lexuar të dhënat nga Google Sheets...</div>";
-
-    const response = await fetch(CSV_URL);
-    if (!response.ok) throw new Error("Nuk u lexua Google Sheet.");
-
-    const text = await response.text();
-    const rows = text.split(/\r?\n/).filter(r => r.trim() !== "");
-    sheetData = rows.map(row => row.split(","));
-    header = sheetData[0];
-    resultDiv.innerHTML = "";
-  }
-
-  function findById(id) {
-    id = id.trim();
-    for (let i = 1; i < sheetData.length; i++) {
-      if (sheetData[i][ID_COLUMN_INDEX] === id) return sheetData[i];
-    }
-    return null;
-  }
-
-  function resetSearch() {
-    document.getElementById("idInput").value = "";
-    document.getElementById("result").innerHTML = "";
-    document.getElementById("idInput").focus();
-  }
-
-  function display(row) {
-    const div = document.getElementById("result");
-    div.innerHTML = "";
-
-    if (!row) {
-      div.innerHTML = "<div class='error'>Nuk u gjet asnjë rresht për këtë numër letërnjoftimi.</div>";
-      return;
+      const text = await response.text();
+      const rows = text.split(/\r?\n/).filter((r) => r.trim() !== "");
+      sheetData = rows.map((row) => row.split(","));
+      header = sheetData[0] || [];
+      resultDiv.innerHTML = "";
     }
 
-    // A KodiLandes, B Leternjoftimi, C EEmri, D DataLindjes,
-    // E DataAplikimit, F Komenti, G Skema, H Rajoni, I LajmerimiFundit
-    const kodiLandes      = row[0] ?? "";
-    const leternjoftimi   = row[1] ?? "";
-    const eEmri           = row[2] ?? "";
-    const dataLindjes     = row[3] ?? "";
-    const dataAplikimit   = row[4] ?? "";
-    const komenti         = row[5] ?? "";
-    const skema           = row[6] ?? "";
-    const rajoni          = row[7] ?? "";
-    const lajmerimiFundit = row[8] ?? "";
-
-    let html = `<div class="card">
-      <div class="card-header">
-        <div class="card-title">Rezultati për letërnjoftimin: <strong>${leternjoftimi}</strong></div>
-        <div class="card-tag">${skema || "Skema"}</div>
-      </div>
-
-      <div class="card-main">
-        <div>
-          <div class="field-label">Emri dhe mbiemri</div>
-          <div class="field-value">${eEmri || "-"}</div>
-        </div>
-        <div>
-          <div class="field-label">Kodi Landes</div>
-          <div class="field-value">${kodiLandes || "-"}</div>
-        </div>
-        <div>
-          <div class="field-label">Data lindjes</div>
-          <div class="field-value">${dataLindjes || "-"}</div>
-        </div>
-        <div>
-          <div class="field-label">Data aplikimit</div>
-          <div class="field-value">${dataAplikimit || "-"}</div>
-        </div>
-        <div>
-          <div class="field-label">Rajoni</div>
-          <div class="field-value">${rajoni || "-"}</div>
-        </div>
-        <div>
-          <div class="field-label">Lajmërimi i fundit</div>
-          <div class="field-value">${lajmerimiFundit || "-"}</div>
-        </div>
-        <div style="grid-column: 1 / -1;">
-          <div class="field-label">Komenti</div>
-          <div class="field-value">${komenti || "-"}</div>
-        </div>
-      </div>
-
-      <div class="table-wrap">
-        <table>
-          <thead><tr>`;
-
-    for (let i = 0; i < header.length; i++) {
-      html += `<th>${header[i] ?? ("Kolona " + (i + 1))}</th>`;
+    function findById(id) {
+      id = id.trim();
+      for (let i = 1; i < sheetData.length; i++) {
+        if (sheetData[i][ID_COLUMN_INDEX] === id) return sheetData[i];
+      }
+      return null;
     }
 
-    html += `</tr></thead><tbody><tr>`;
+    function display(row) {
+      const div = document.getElementById("result");
+      div.innerHTML = "";
 
-    for (let i = 0; i < header.length; i++) {
-      html += `<td>${row[i] ?? ""}</td>`;
+      if (!row) {
+        div.innerHTML =
+          "<div class='error'>Nuk u gjet asnjë rresht për këtë numër letërnjoftimi. Kontrollo saktësinë.</div>";
+        return;
+      }
+
+      // A KodiLandes, B Leternjoftimi, C EEmri, D DataLindjes,
+      // E DataAplikimit, F Komenti, G Skema, H Rajoni, I LajmerimiFundit
+      const kodiLandes      = row[0] ?? "";
+      const leternjoftimi   = row[1] ?? "";
+      const eEmri           = row[2] ?? "";
+      const dataLindjes     = row[3] ?? "";
+      const dataAplikimit   = row[4] ?? "";
+      const komenti         = row[5] ?? "";
+      const skema           = row[6] ?? "";
+      const rajoni          = row[7] ?? "";
+      const lajmerimiFundit = row[8] ?? "";
+
+      let html = `<div class="card">
+        <div class="card-header">
+          <div class="card-title">
+            Rezultati për letërnjoftimin: <strong>${leternjoftimi}</strong>
+          </div>
+          <div class="card-tag">${skema || "Skema"}</div>
+        </div>
+
+        <div class="card-main">
+          <div>
+            <div class="field-label">Emri dhe mbiemri</div>
+            <div class="field-value">${eEmri || "-"}</div>
+          </div>
+          <div>
+            <div class="field-label">Kodi Landes</div>
+            <div class="field-value">${kodiLandes || "-"}</div>
+          </div>
+          <div>
+            <div class="field-label">Data lindjes</div>
+            <div class="field-value">${dataLindjes || "-"}</div>
+          </div>
+          <div>
+            <div class="field-label">Data aplikimit</div>
+            <div class="field-value">${dataAplikimit || "-"}</div>
+          </div>
+          <div>
+            <div class="field-label">Rajoni</div>
+            <div class="field-value">${rajoni || "-"}</div>
+          </div>
+          <div>
+            <div class="field-label">Lajmërimi i fundit</div>
+            <div class="field-value">${lajmerimiFundit || "-"}</div>
+          </div>
+          <div style="grid-column: 1 / -1;">
+            <div class="field-label">Komenti</div>
+            <div class="field-value">${komenti || "-"}</div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>`;
+
+      for (let i = 0; i < header.length; i++) {
+        html += `<th>${header[i] ?? ("Kolona " + (i + 1))}</th>`;
+      }
+
+      html += `</tr>
+            </thead>
+            <tbody>
+              <tr>`;
+
+      for (let i = 0; i < header.length; i++) {
+        html += `<td>${row[i] ?? ""}</td>`;
+      }
+
+      html += `</tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="actions no-print">
+          <button class="btn-print" onclick="window.print()">🖨️ Print</button>
+          <button class="btn-reset" onclick="resetSearch()">↩️ Kthehu te kërkimi</button>
+        </div>
+      </div>`;
+
+      div.innerHTML = html;
     }
 
-    html += `</tr></tbody></table>
-      </div>
+    async function handleSearch() {
+      const id = document.getElementById("idInput").value;
+      const resultDiv = document.getElementById("result");
 
-      <div class="actions no-print">
-        <button class="btn-print" onclick="window.print()">🖨️ Print</button>
-        <button class="btn-reset" onclick="resetSearch()">↩️ Kthehu te kërkimi</button>
-      </div>
-    </div>`;
+      if (!id.trim()) {
+        resultDiv.innerHTML = "<div class='error'>Shkruaj një numër letërnjoftimi së pari.</div>";
+        return;
+      }
 
-    div.innerHTML = html;
-  }
+      try {
+        if (sheetData.length === 0) await loadData();
+      } catch (e) {
+        resultDiv.innerHTML = `<div class='error'>${e.message}</div>`;
+        return;
+      }
 
-  async function handleSearch() {
-    const id = document.getElementById("idInput").value;
-    const resultDiv = document.getElementById("result");
-
-    if (!id.trim()) {
-      resultDiv.innerHTML = "<div class='error'>Shkruaj një numër letërnjoftimi së pari.</div>";
-      return;
+      const row = findById(id);
+      display(row);
     }
 
-    try {
-      if (sheetData.length === 0) await loadData();
-    } catch (e) {
-      resultDiv.innerHTML = `<div class='error'>${e.message}</div>`;
-      return;
+    function resetSearch() {
+      document.getElementById("idInput").value = "";
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("idInput").focus();
     }
 
-    display(findById(id));
-  }
-
-  // ===== EVENTS =====
-  document.getElementById("searchBtn").addEventListener("click", handleSearch);
-  document.getElementById("idInput").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") handleSearch();
-  });
-
-  document.getElementById("btnLogin").addEventListener("click", () => {
-    const u = document.getElementById("loginUser").value.trim();
-    const p = document.getElementById("loginPass").value;
-
-    const err = document.getElementById("loginErr");
-    err.style.display = "none";
-
-    if (u === LOGIN_USER && p === LOGIN_PASS) {
-      setLoggedIn(u);
-      showApp();
-    } else {
-      err.style.display = "block";
-    }
-  });
-
-  document.getElementById("btnClear").addEventListener("click", () => {
-    document.getElementById("loginUser").value = "";
-    document.getElementById("loginPass").value = "";
-    document.getElementById("loginErr").style.display = "none";
-    document.getElementById("loginUser").focus();
-  });
-
-  document.getElementById("loginPass").addEventListener("keydown", (e) => {
-    if (e.key === "Enter") document.getElementById("btnLogin").click();
-  });
-
-  document.getElementById("btnLogout").addEventListener("click", () => {
-    clearLogin();
-    resetSearch();
-    showLogin();
-  });
-
-  // ===== INIT =====
-  if (isLoggedIn()) showApp();
-  else showLogin();
-</script>
-
+    document.getElementById("searchBtn").addEventListener("click", handleSearch);
+    document.getElementById("idInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") handleSearch();
+    });
+  </script>
 </body>
 </html>
-
-
-
-
