@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kërkim sipas Letërnjoftimit | Google Sheets</title>
+  <title>Republika e Kosovës | Kërkim sipas Letërnjoftimit</title>
 
   <style>
     * { box-sizing: border-box; }
@@ -17,17 +17,38 @@
       justify-content: center;
       background: linear-gradient(135deg, #0b1f3a, #0a2540, #003a8f);
       color: #e5e7eb;
+      padding: 16px 12px 88px; /* vend për footer fixed */
     }
 
     .app {
+      position: relative;
       background: rgba(10, 25, 47, 0.95);
       border-radius: 18px;
-      padding: 24px 22px 20px;
+      padding: 22px 18px 18px;
       width: 100%;
       max-width: 520px;
       box-shadow:
         0 20px 40px rgba(0,0,0,0.50),
         0 0 0 1px rgba(59,130,246,0.25);
+      overflow: hidden;
+    }
+
+    /* Watermark */
+    .wm {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.08;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transform: rotate(-18deg);
+      font-weight: 800;
+      letter-spacing: 2px;
+      font-size: 34px;
+      color: #93c5fd;
+      text-transform: uppercase;
+      user-select: none;
     }
 
     .header {
@@ -37,6 +58,8 @@
       margin-bottom: 12px;
       padding-bottom: 10px;
       border-bottom: 1px solid rgba(59,130,246,0.18);
+      position: relative;
+      z-index: 2;
     }
 
     .logo-wrap {
@@ -52,12 +75,14 @@
       margin: 0;
       font-size: 18px;
       font-weight: 650;
+      line-height: 1.2;
     }
 
     .header-text p {
       margin: 2px 0 0;
       font-size: 12px;
       color: #9ca3af;
+      line-height: 1.25;
     }
 
     .icon-circle {
@@ -72,23 +97,28 @@
       font-weight: 700;
       font-size: 18px;
       margin: 10px 0 6px;
+      position: relative;
+      z-index: 2;
     }
 
     .search-row {
       display: flex;
       gap: 8px;
       margin-top: 4px;
+      position: relative;
+      z-index: 2;
     }
 
     .search-row input {
       flex: 1;
+      min-width: 0;
       border-radius: 10px;
       border: 1px solid rgba(148,163,184,0.45);
       background: rgba(8, 20, 40, 0.85);
-      padding: 10px 10px;
+      padding: 12px 10px;
       color: #e5e7eb;
       outline: none;
-      font-size: 14px;
+      font-size: 15px;
     }
 
     .search-row input:focus {
@@ -99,32 +129,38 @@
     .search-row button {
       border-radius: 10px;
       border: none;
-      padding: 10px 14px;
-      font-size: 14px;
-      font-weight: 600;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 650;
       cursor: pointer;
       background: linear-gradient(135deg, #2563eb, #1e40af);
       color: white;
       white-space: nowrap;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
+      min-width: 108px;
+      touch-action: manipulation;
     }
 
     .search-row button:hover { filter: brightness(1.07); }
 
     .hint {
-      margin-top: 6px;
+      margin-top: 8px;
       font-size: 11px;
       color: #9ca3af;
+      position: relative;
+      z-index: 2;
+      line-height: 1.3;
     }
 
-    #result { margin-top: 18px; }
+    #result { margin-top: 18px; position: relative; z-index: 2; }
 
     .card {
       background: rgba(10, 25, 47, 0.95);
       border-radius: 14px;
-      padding: 14px 14px 10px;
+      padding: 14px 14px 12px;
       border: 1px solid rgba(59,130,246,0.22);
       box-shadow: 0 10px 25px rgba(0,0,0,0.35);
     }
@@ -132,15 +168,16 @@
     .card-header {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
+      align-items: flex-start;
+      margin-bottom: 10px;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .card-title {
       font-size: 14px;
       font-weight: 650;
-      line-height: 1.2;
+      line-height: 1.25;
     }
 
     .card-tag {
@@ -151,12 +188,13 @@
       color: #dbeafe;
       border: 1px solid rgba(37, 99, 235, 0.35);
       flex: 0 0 auto;
+      margin-top: 2px;
     }
 
     .card-main {
       display: grid;
       grid-template-columns: 1.1fr 1.1fr;
-      gap: 8px 16px;
+      gap: 10px 14px;
       font-size: 12px;
     }
 
@@ -167,21 +205,24 @@
 
     .field-value {
       font-size: 13px;
-      font-weight: 550;
+      font-weight: 600;
       color: #e5e7eb;
       word-break: break-word;
+      line-height: 1.2;
     }
 
     .table-wrap {
       margin-top: 12px;
-      max-height: 240px;
       overflow: auto;
       border-radius: 10px;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid rgba(59,130,246,0.18);
     }
 
     table {
       border-collapse: collapse;
       width: 100%;
+      min-width: 720px; /* që të mos shtypet shumë në mobile */
       font-size: 11px;
     }
 
@@ -200,51 +241,38 @@
     }
 
     .actions {
-      margin-top: 15px;
+      margin-top: 14px;
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
     }
 
-    .btn-print {
-      padding: 9px 14px;
+    .btn-print, .btn-reset {
+      padding: 10px 14px;
       border: none;
-      border-radius: 8px;
-      background: linear-gradient(135deg, #2563eb, #1e40af);
+      border-radius: 10px;
       color: white;
       cursor: pointer;
-      font-size: 13px;
-      font-weight: 650;
+      font-size: 14px;
+      font-weight: 700;
       display: inline-flex;
       align-items: center;
       gap: 6px;
+      touch-action: manipulation;
     }
 
-    .btn-reset {
-      padding: 9px 14px;
-      border: none;
-      border-radius: 8px;
-      background: #ef4444;
-      color: white;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 650;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .btn-print:hover { filter: brightness(1.07); }
-    .btn-reset:hover { filter: brightness(1.08); }
+    .btn-print { background: linear-gradient(135deg, #2563eb, #1e40af); }
+    .btn-reset { background: #ef4444; }
 
     .error {
       margin-top: 10px;
       color: #fecaca;
       background: rgba(127,29,29,0.6);
       border-radius: 10px;
-      padding: 8px 10px;
+      padding: 10px 10px;
       font-size: 12px;
       border: 1px solid rgba(248,113,113,0.5);
+      line-height: 1.3;
     }
 
     .loading {
@@ -253,15 +281,127 @@
       color: #bfdbfe;
     }
 
-    .no-print {}
-
-    @media (max-width: 540px) {
-      .app { margin: 16px; padding: 18px 16px; }
-      .card-main { grid-template-columns: 1fr; }
+    /* Footer fixed */
+    .footer {
+      position: fixed;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      font-size: 12px;
+      color: #9ca3af;
+      z-index: 20;
+      pointer-events: none;
+      width: min(520px, calc(100% - 24px));
     }
 
+    .footer strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 14px;
+      color: #e5e7eb;
+      font-weight: 650;
+    }
+
+    .footer small {
+      display: block;
+      margin-top: 8px;
+      font-size: 11px;
+      color: #94a3b8;
+      line-height: 1.25;
+    }
+
+    /* LOGIN overlay */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 18px;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(10, 25, 47, 0.98);
+      border: 1px solid rgba(59,130,246,0.28);
+      border-radius: 16px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.55);
+      padding: 18px 16px 14px;
+    }
+
+    .login-title {
+      margin: 0 0 6px;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .login-sub {
+      margin: 0 0 12px;
+      font-size: 12px;
+      color: #9ca3af;
+      line-height: 1.3;
+    }
+
+    .login-row {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .login-row input {
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid rgba(148,163,184,0.45);
+      background: rgba(8, 20, 40, 0.85);
+      padding: 12px 10px;
+      color: #e5e7eb;
+      outline: none;
+      font-size: 15px;
+    }
+
+    .login-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn-login {
+      border-radius: 10px;
+      border: none;
+      padding: 12px 14px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(135deg, #2563eb, #1e40af);
+      color: white;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      touch-action: manipulation;
+    }
+
+    .login-error {
+      margin-top: 10px;
+      color: #fecaca;
+      background: rgba(127,29,29,0.6);
+      border-radius: 10px;
+      padding: 10px 10px;
+      font-size: 12px;
+      border: 1px solid rgba(248,113,113,0.5);
+      display: none;
+      line-height: 1.3;
+    }
+
+    /* Print header */
+    .print-header { display: none; }
+
     @media print {
-      body { background: #ffffff !important; }
+      body { background: #ffffff !important; padding: 0 !important; }
       .app {
         box-shadow: none !important;
         background: #ffffff !important;
@@ -271,6 +411,11 @@
         padding: 10px 10px 0;
       }
       .no-print { display: none !important; }
+      .footer { display: none !important; }
+      .wm { display: none !important; }
+      .overlay { display: none !important; }
+      .print-header { display: flex !important; }
+
       .card {
         background: #ffffff !important;
         border-color: #00000033;
@@ -279,24 +424,57 @@
       table, th, td { border-color: #00000055; }
       th { background: #f3f4f6 !important; color: #000 !important; }
     }
+
+    /* Mobile: input + button në kolone */
+    @media (max-width: 520px) {
+      .search-row { flex-direction: column; }
+      .search-row button { width: 100%; min-width: 0; }
+      .logo-wrap { width: 46px; height: 46px; flex: 0 0 46px; }
+      .header-text h1 { font-size: 16px; }
+      .header-text p { font-size: 11px; }
+      .footer { bottom: 10px; }
+      .footer strong { font-size: 13px; }
+    }
+
+    /* Small mobile */
+    @media (max-width: 380px) {
+      .app { padding: 18px 14px 14px; }
+      .card-main { grid-template-columns: 1fr; }
+      table { min-width: 640px; }
+    }
   </style>
 </head>
 
 <body>
-  <div class="app">
-    <!-- Header -->
+
+  <!-- LOGIN -->
+  <div class="overlay" id="loginOverlay">
+    <div class="login-box">
+      <h2 class="login-title">Akses i kufizuar</h2>
+      <p class="login-sub">Shkruaj kredencialet për të vazhduar.</p>
+
+      <div class="login-row">
+        <input id="user" type="text" placeholder="Username" autocomplete="off" />
+        <input id="pass" type="password" placeholder="Password" autocomplete="off" />
+      </div>
+
+      <div class="login-actions">
+        <button class="btn-login" id="loginBtn">🔐 Hyr</button>
+      </div>
+
+      <div class="login-error" id="loginErr">Username ose Password gabim.</div>
+    </div>
+  </div>
+
+  <div class="app" id="appRoot" style="display:none;">
+    <div class="wm">REPUBLIKA E KOSOVËS</div>
+
     <div class="header">
       <div class="logo-wrap">
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Flag_of_Kosovo.svg"
           alt="Flamuri i Kosovës"
-          style="
-            width:48px;
-            height:48px;
-            border-radius:10px;
-            box-shadow: 0 6px 16px rgba(0,0,0,0.35);
-            display:block;
-          "
+          style="width:48px;height:48px;border-radius:10px;box-shadow: 0 6px 16px rgba(0,0,0,0.35);display:block;"
         />
       </div>
 
@@ -308,7 +486,6 @@
 
     <div class="icon-circle no-print">ID</div>
 
-    <!-- Zona e kërkimit -->
     <div class="search-row no-print">
       <input
         type="text"
@@ -326,12 +503,63 @@
     <div id="result"></div>
   </div>
 
+  <!-- Footer fixed -->
+  <div class="footer">
+    Zhvilluar dhe Sinkronizuar
+    <strong>Edmond Murati</strong>
+    <small>
+      Të dhënat mund të mos sinkronizohen varësisht nga Government Gateway
+      si dhe afatet e procesimit
+    </small>
+  </div>
+
   <script>
-    // Linku i RI i publikuar CSV nga Google Sheets
+    /* LOGIN (basic - front-end) */
+    const AUTH_USER = "admin";   // ndrysho këtu
+    const AUTH_PASS = "12345";   // ndrysho këtu
+    const AUTH_KEY  = "rk_auth_ok";
+
+    function showApp() {
+      document.getElementById("loginOverlay").style.display = "none";
+      document.getElementById("appRoot").style.display = "block";
+    }
+    function showLogin() {
+      document.getElementById("loginOverlay").style.display = "flex";
+      document.getElementById("appRoot").style.display = "none";
+    }
+    function setAuth(ok) {
+      if (ok) sessionStorage.setItem(AUTH_KEY, "1");
+      else sessionStorage.removeItem(AUTH_KEY);
+    }
+    function isAuth() {
+      return sessionStorage.getItem(AUTH_KEY) === "1";
+    }
+    function doLogin() {
+      const u = document.getElementById("user").value.trim();
+      const p = document.getElementById("pass").value;
+      const err = document.getElementById("loginErr");
+
+      if (u === AUTH_USER && p === AUTH_PASS) {
+        err.style.display = "none";
+        setAuth(true);
+        showApp();
+        document.getElementById("idInput").focus();
+      } else {
+        err.style.display = "block";
+      }
+    }
+    document.getElementById("loginBtn").addEventListener("click", doLogin);
+    document.getElementById("pass").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") doLogin();
+    });
+
+    if (isAuth()) showApp();
+    else showLogin();
+
+    /* DATA */
     const CSV_URL =
       "https://docs.google.com/spreadsheets/d/e/2PACX-1vTSMBzjWZIZfNUD0bPlfi6VvhncQ3l1R469dZ1jgYBdrcn5LRW_5_No6p_HBmL1z7gNzestszsUkyd_/pub?gid=1793407122&single=true&output=csv";
 
-    // Leternjoftimi është në kolonën B => indeks 1
     const ID_COLUMN_INDEX = 1;
 
     let sheetData = [];
@@ -341,7 +569,7 @@
       const resultDiv = document.getElementById("result");
       resultDiv.innerHTML = "<div class='loading'>Duke lexuar të dhënat nga Google Sheets...</div>";
 
-      const response = await fetch(CSV_URL);
+      const response = await fetch(CSV_URL, { cache: "no-store" });
       if (!response.ok) {
         throw new Error("Nuk u lexua Google Sheet. Kontrollo që linku CSV hapet normalisht në browser.");
       }
@@ -356,9 +584,24 @@
     function findById(id) {
       id = id.trim();
       for (let i = 1; i < sheetData.length; i++) {
-        if (sheetData[i][ID_COLUMN_INDEX] === id) return sheetData[i];
+        if ((sheetData[i][ID_COLUMN_INDEX] || "").trim() === id) return sheetData[i];
       }
       return null;
+    }
+
+    function resetSearch() {
+      document.getElementById("idInput").value = "";
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("idInput").focus();
+    }
+
+    function esc(s) {
+      return String(s ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
     }
 
     function display(row) {
@@ -371,8 +614,6 @@
         return;
       }
 
-      // A KodiLandes, B Leternjoftimi, C EEmri, D DataLindjes,
-      // E DataAplikimit, F Komenti, G Skema, H Rajoni, I LajmerimiFundit
       const kodiLandes      = row[0] ?? "";
       const leternjoftimi   = row[1] ?? "";
       const eEmri           = row[2] ?? "";
@@ -386,39 +627,39 @@
       let html = `<div class="card">
         <div class="card-header">
           <div class="card-title">
-            Rezultati për letërnjoftimin: <strong>${leternjoftimi}</strong>
+            Rezultati për letërnjoftimin: <strong>${esc(leternjoftimi)}</strong>
           </div>
-          <div class="card-tag">${skema || "Skema"}</div>
+          <div class="card-tag">${esc(skema || "Skema")}</div>
         </div>
 
         <div class="card-main">
           <div>
             <div class="field-label">Emri dhe mbiemri</div>
-            <div class="field-value">${eEmri || "-"}</div>
+            <div class="field-value">${esc(eEmri || "-")}</div>
           </div>
           <div>
             <div class="field-label">Kodi Landes</div>
-            <div class="field-value">${kodiLandes || "-"}</div>
+            <div class="field-value">${esc(kodiLandes || "-")}</div>
           </div>
           <div>
             <div class="field-label">Data lindjes</div>
-            <div class="field-value">${dataLindjes || "-"}</div>
+            <div class="field-value">${esc(dataLindjes || "-")}</div>
           </div>
           <div>
             <div class="field-label">Data aplikimit</div>
-            <div class="field-value">${dataAplikimit || "-"}</div>
+            <div class="field-value">${esc(dataAplikimit || "-")}</div>
           </div>
           <div>
             <div class="field-label">Rajoni</div>
-            <div class="field-value">${rajoni || "-"}</div>
+            <div class="field-value">${esc(rajoni || "-")}</div>
           </div>
           <div>
             <div class="field-label">Lajmërimi i fundit</div>
-            <div class="field-value">${lajmerimiFundit || "-"}</div>
+            <div class="field-value">${esc(lajmerimiFundit || "-")}</div>
           </div>
           <div style="grid-column: 1 / -1;">
             <div class="field-label">Komenti</div>
-            <div class="field-value">${komenti || "-"}</div>
+            <div class="field-value">${esc(komenti || "-")}</div>
           </div>
         </div>
 
@@ -428,7 +669,7 @@
               <tr>`;
 
       for (let i = 0; i < header.length; i++) {
-        html += `<th>${header[i] ?? ("Kolona " + (i + 1))}</th>`;
+        html += `<th>${esc(header[i] ?? ("Kolona " + (i + 1)))}</th>`;
       }
 
       html += `</tr>
@@ -437,7 +678,7 @@
               <tr>`;
 
       for (let i = 0; i < header.length; i++) {
-        html += `<td>${row[i] ?? ""}</td>`;
+        html += `<td>${esc(row[i] ?? "")}</td>`;
       }
 
       html += `</tr>
@@ -466,18 +707,12 @@
       try {
         if (sheetData.length === 0) await loadData();
       } catch (e) {
-        resultDiv.innerHTML = `<div class='error'>${e.message}</div>`;
+        resultDiv.innerHTML = `<div class='error'>${esc(e.message)}</div>`;
         return;
       }
 
       const row = findById(id);
       display(row);
-    }
-
-    function resetSearch() {
-      document.getElementById("idInput").value = "";
-      document.getElementById("result").innerHTML = "";
-      document.getElementById("idInput").focus();
     }
 
     document.getElementById("searchBtn").addEventListener("click", handleSearch);
